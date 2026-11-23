@@ -1,44 +1,50 @@
-reply_id,response_to,reply_text,nli_agrees,nli_disagrees,sent_negative,sent_neutral,sent_positive,irony,personal_label,predicted_stance
+reply_id,response_to,reply_text,nli_agrees,nli_disagrees,sent_negative,sent_neutral,sent_positive,irony,personal_label,stance
 892120092603027461,892119586287493120,Did @CNN just assume that baby's gender??? ,0.008,0.007,0.721,0.269,0.01,0.935,agreement,agreement
 892156707937415173,892119586287493120,"That's a gay man too.
-So basically liberals have gotten gay men to marry women and have kids.",agreement,neutral,0.015,0.019,0.568,0.411,0.021,0.944
+So basically liberals have gotten gay men to marry women and have kids.",0.015,0.019,0.568,0.411,0.021,0.944,agreement,disagreement
 892121095016521728,892119586287493120,"OMG.... how stupid.
-Science is Science people.",agreement,neutral,0.029,0.002,0.893,0.093,0.014,0.74
-892157186549436416,892119586287493120,Ex-gay conversion therapy in action ladies and gentlemen.,agreement,neutral,0.025,0.007,0.615,0.362,0.023,0.866
-892425994035974144,892119586287493120,Why do you dislike other humans so much?,disagreement,neutral,0.038,0.009,0.895,0.096,0.009,0.17
-1965225744331932028,1965168703357792523,"And then the MAGA cult said ""It's not his signature!"" 😂",agreement,neutral,0.001,0.004,0.556,0.396,0.048,0.733
-1965169957454619031,1965168703357792523,"And the picture is of a child, not women",agreement,neutral,0.001,0.002,0.607,0.378,0.015,0.165
-1965297854114898106,1965168703357792523,"What’s not being talked about enough, is that it’s clearly a drawing of a child, not a woman.",agreement,neutral,0.001,0.001,0.566,0.416,0.018,0.109
-1965170897125589035,1965168703357792523,Def not worse then Biden showering with his daughter at an “inappropriate age”,disagreement,neutral,0.002,0.084,0.605,0.368,0.027,0.424
+Science is Science people.",0.029,0.002,0.893,0.093,0.014,0.74,agreement,agreement
+892157186549436416,892119586287493120,Ex-gay conversion therapy in action ladies and gentlemen.,0.025,0.007,0.615,0.362,0.023,0.866,agreement,agreement
+892425994035974144,892119586287493120,Why do you dislike other humans so much?,0.038,0.009,0.895,0.096,0.009,0.17,disagreement,disagreement
+1965225744331932028,1965168703357792523,"And then the MAGA cult said ""It's not his signature!"" 😂",0.001,0.004,0.556,0.396,0.048,0.733,agreement,agreement
+1965169957454619031,1965168703357792523,"And the picture is of a child, not women",0.001,0.002,0.607,0.378,0.015,0.165,agreement,disagreement
+1965297854114898106,1965168703357792523,"What’s not being talked about enough, is that it’s clearly a drawing of a child, not a woman.",0.001,0.001,0.566,0.416,0.018,0.109,agreement,disagreement
+1965170897125589035,1965168703357792523,Def not worse then Biden showering with his daughter at an “inappropriate age”,0.002,0.084,0.605,0.368,0.027,0.424,disagreement,disagreement
 1965171526845825530,1965168703357792523,"It’s likely the thing they have in common is they both sourced underage models from Casablancas.
-He pushed the “enigmatic” style based on Brooke Shield’s work when she was underage, and Trump was obsessed with Shields:",agreement,neutral,0.001,0.003,0.144,0.819,0.037,0.472
-1509711824563843104,1509709072010031104,"My daughter came to me last week, told me she was a cow, and she even mooed.  As a loving father, I turned her bedroom into home office, and we moved her to the backyard.  I will say though, for a cow, she sure does cry a lot.",agreement,neutral,0.001,0.001,0.138,0.511,0.351,0.672
+He pushed the “enigmatic” style based on Brooke Shield’s work when she was underage, and Trump was obsessed with Shields:",0.001,0.003,0.144,0.819,0.037,0.472,agreement,disagreement
+2040171526259941437,2040160761679396869,Remember when they pretended to care about the protesters?,0.004,0.0,0.596,0.384,0.02,0.928,agreement,agreement
+2040161411649687699,2040160761679396869,This is antisemitism.,0.003,0.876,0.082,0.843,0.075,0.019,disagreement,disagreement
+2040180105352282238,2040160761679396869,He has gone mad…,0.004,0.004,0.039,0.622,0.34,0.039,agreement,disagreement
+2040171636872057299,2040160761679396869,"Disgusting creep you are.  My God, the Islamic Terror Regime that you support murders gay people, rapes women and children, murders children, and just killed 40,000 innocent protesters.  How the fuck do you sleep at night knowing you support these murders and rapes?",0.015,0.106,0.96,0.035,0.005,0.936,disagreement,disagreement
+2040162371361194045,2040160761679396869,"Again, we are the bad guys.  That’s a tough pill for a lot of people to swallow.",0.001,0.002,0.861,0.129,0.01,0.908,agreement,agreement
+1509711824563843104,1509709072010031104,"My daughter came to me last week, told me she was a cow, and she even mooed.  As a loving father, I turned her bedroom into home office, and we moved her to the backyard.  I will say though, for a cow, she sure does cry a lot.",0.001,0.001,0.138,0.511,0.351,0.672,agreement,agreement
 1509724866278273025,1509709072010031104,"Remember when Ketanji Brown Jackson refrained from defining a woman saying she is not a biologist? That was an intelligent answer. 
-You should try an intelligent  answer. Just once.",disagreement,neutral,0.0,0.001,0.305,0.553,0.142,0.83
-1509709207687344132,1509709072010031104,It’s sad this needs to be said smh,agreement,neutral,0.0,0.001,0.921,0.073,0.006,0.088
+You should try an intelligent  answer. Just once.",0.0,0.001,0.305,0.553,0.142,0.83,disagreement,agreement
+1509709207687344132,1509709072010031104,It’s sad this needs to be said smh,0.0,0.001,0.921,0.073,0.006,0.088,agreement,disagreement
 1509710709482995714,1509709072010031104,"Is this what they mean when they say homeschoolers need to be “socialized“? 
-Because I prefer my kids not groomed for such evil.",agreement,neutral,0.002,0.001,0.843,0.149,0.008,0.755
-1509710343869804545,1509709072010031104,BIG FACTS. My 4 & 7 year old are proof. sonic the hedgehog & super Mario is all they think about 😆,agreement,neutral,0.002,0.002,0.011,0.109,0.88,0.068
-1540349392661905409,1521971431134965761,"My mother had 7 children and Placed me for adoption, I never met her, but bless her. I live because she chose to let me live",agreement,neutral,0.005,0.002,0.035,0.226,0.739,0.041
-1540348116309684224,1521971431134965761,"Yes, let's rejoice, but now we must take our message to the States, because abortion is not going away. There will still be States (like mine, NJ 😭) that allow abortion. This is our new mission field.",agreement,neutral,0.002,0.001,0.122,0.47,0.408,0.595
-1540359974953668610,1521971431134965761,As prolifers lets flood local pregnancy centers with donations.,agreement,neutral,0.002,0.001,0.362,0.605,0.033,0.953
-1188744896288608256,1188743817341689858,"Her death should never have been allowed to happen, but this can never happen again. It was her death that helped change the law in Ireland, May her gentle soul Rest In Peace.",agreement,agreement,0.917,0.0,0.776,0.188,0.035,0.132
-1188817204432818176,1188743817341689858,"Savita Halappanavar, RIP, sacrificed on the altar of superstition instead of being allowed to die by doctors who could have saved her life with a routine procedure. They should have been struck off for killing a woman suffering a miscarriage. That poor woman.",agreement,agreement,0.838,0.002,0.914,0.08,0.007,0.193
-1188910352353976321,1188743817341689858,"I can't be the only person having a mental double take thinking ""did that really happen to that woman in a western european country in this day and age?!""",agreement,neutral,0.027,0.0,0.833,0.154,0.012,0.157
-1540348020327596032,1188743817341689858,"I broke down crying and praising God 
-I'm so happy.",agreement,neutral,0.008,0.004,0.01,0.017,0.973,0.611
-1540351388873523203,1188743817341689858,"So amazing. Shout out to all of my fellow 
-@NDAlumni
- who made the trip to DC every January for the March. Irish Fighting For Life!",agreement,disagreement,0.004,0.85,0.002,0.014,0.983,0.081
-1267929919293538304,1267929593207500801,"With all due respect, and from a full-blood Native American, mind your own damn business!",disagreement,neutral,0.049,0.001,0.474,0.406,0.12,0.087
-1267970683000119296,1267929593207500801,"Leading studies that polled Native Americans show the large majority are not offended by the name and in fact in the most recent poll when asked the word they would use to describe how they feel about the name, proud was the most common answer",disagreement,neutral,0.031,0.004,0.024,0.39,0.585,0.235
-1267930719789232128,1267929593207500801,now isnt the time to ridicule an nfl teams name lol focus on the real issue here,disagreement,neutral,0.01,0.001,0.8,0.186,0.014,0.19
-1267936356694540289,1267929593207500801,"Like you did, Sandy?",disagreement,neutral,0.041,0.001,0.029,0.808,0.163,0.008
-1268142940737679360,1267929593207500801,"You never fail to outdo yourself, AOC!",disagreement,neutral,0.088,0.005,0.008,0.027,0.965,0.851
-795834042859929600,795833821501460480,"Jesus lady, can you be anymore racist",disagreement,neutral,0.001,0.006,0.911,0.08,0.009,0.207
-795834825999400960,795833821501460480,wouldn't this not include Trump since his Mother was born in Scotland?,disagreement,neutral,0.001,0.064,0.268,0.71,0.021,0.132
-795840630299758592,795833821501460480,"right, and Trumps own children and wives wouldn't be able to vote for him either ... how can someone be so dumb",disagreement,neutral,0.0,0.024,0.889,0.103,0.009,0.55
+Because I prefer my kids not groomed for such evil.",0.002,0.001,0.843,0.149,0.008,0.755,agreement,agreement
+1509710343869804545,1509709072010031104,BIG FACTS. My 4 & 7 year old are proof. sonic the hedgehog & super Mario is all they think about 😆,0.002,0.002,0.011,0.109,0.88,0.068,agreement,agreement
+1540349392661905409,1521971431134965761,"My mother had 7 children and Placed me for adoption, I never met her, but bless her. I live because she chose to let me live",0.005,0.002,0.035,0.226,0.739,0.041,agreement,agreement
+1540348116309684224,1521971431134965761,"Yes, let's rejoice, but now we must take our message to the States, because abortion is not going away. There will still be States (like mine, NJ 😭) that allow abortion. This is our new mission field.",0.002,0.001,0.122,0.47,0.408,0.595,agreement,agreement
+1540359974953668610,1521971431134965761,As prolifers lets flood local pregnancy centers with donations.,0.002,0.001,0.362,0.605,0.033,0.953,agreement,agreement
+1540347901335031808,1521971431134965761,God always listens our prayers🙏🙏🙏🙏,0.004,0.001,0.014,0.039,0.946,0.056,agreement,agreement
+1540453824011304966,1521971431134965761,"Time to change the date of the March for Life to June 24th! Yippee! No more snow blizzards to contend with in Washington, DC!
+
+”I like babies, yes I do. I like babies, how about you?”",0.005,0.001,0.018,0.142,0.84,0.849,agreement,agreement
+1188744896288608256,1188743817341689858,"Her death should never have been allowed to happen, but this can never happen again. It was her death that helped change the law in Ireland, May her gentle soul Rest In Peace.",0.917,0.0,0.776,0.188,0.035,0.132,agreement,agreement
+1188817204432818176,1188743817341689858,"Savita Halappanavar, RIP, sacrificed on the altar of superstition instead of being allowed to die by doctors who could have saved her life with a routine procedure. They should have been struck off for killing a woman suffering a miscarriage. That poor woman.",0.838,0.002,0.914,0.08,0.007,0.193,agreement,disagreement
+1188910352353976321,1188743817341689858,"I can't be the only person having a mental double take thinking ""did that really happen to that woman in a western european country in this day and age?!""",0.027,0.0,0.833,0.154,0.012,0.157,agreement,agreement
+1188913476263018496,1188743817341689858,Her death has had a POWERFUL impact on the world,0.036,0.0,0.204,0.339,0.456,0.473,agreement,agreement
+1188811333166190598,1188743817341689858,"She should have been delivered under controlled circumstances, which was actually legal under then-current Irish law. The doctors were disciplined for medical negligence.",0.765,0.01,0.628,0.353,0.019,0.625,disagreement,disagreement
+1267929919293538304,1267929593207500801,"With all due respect, and from a full-blood Native American, mind your own damn business!",0.049,0.001,0.474,0.406,0.12,0.087,disagreement,disagreement
+1267970683000119296,1267929593207500801,"Leading studies that polled Native Americans show the large majority are not offended by the name and in fact in the most recent poll when asked the word they would use to describe how they feel about the name, proud was the most common answer",0.031,0.004,0.024,0.39,0.585,0.235,disagreement,disagreement
+1267930719789232128,1267929593207500801,now isnt the time to ridicule an nfl teams name lol focus on the real issue here,0.01,0.001,0.8,0.186,0.014,0.19,disagreement,disagreement
+1267936356694540289,1267929593207500801,"Like you did, Sandy?",0.041,0.001,0.029,0.808,0.163,0.008,disagreement,agreement
+1268142940737679360,1267929593207500801,"You never fail to outdo yourself, AOC!",0.088,0.005,0.008,0.027,0.965,0.851,disagreement,agreement
+795834042859929600,795833821501460480,"Jesus lady, can you be anymore racist",0.001,0.006,0.911,0.08,0.009,0.207,disagreement,disagreement
+795834825999400960,795833821501460480,wouldn't this not include Trump since his Mother was born in Scotland?,0.001,0.064,0.268,0.71,0.021,0.132,disagreement,disagreement
+795840630299758592,795833821501460480,"right, and Trumps own children and wives wouldn't be able to vote for him either ... how can someone be so dumb",0.0,0.024,0.889,0.103,0.009,0.55,disagreement,disagreement
 795834898602868736,795833821501460480,"That's the exact standard the Nazis used.
 
-True story.",disagreement,neutral,0.0,0.002,0.552,0.409,0.039,0.642
-795834898602868736,795833821501460480,not even trying to hide it anymore huh,disagreement,neutral,0.001,0.0,0.774,0.211,0.015,0.364
+True story.",0.0,0.002,0.552,0.409,0.039,0.642,disagreement,agreement
+795837354325975040,795833821501460480,not even trying to hide it anymore huh,0.001,0.0,0.774,0.211,0.015,0.364,disagreement,agreement
