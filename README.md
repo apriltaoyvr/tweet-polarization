@@ -16,12 +16,19 @@ The models used are:
 
 ## Getting Started
 
+The initial run will download the models. Expect it to be a little slower than subsequent runs.
+
 ```bash
 pip install transformers torch pandas
 python main.py
 ```
 
-The initial run will download the models. Expect it to be a little slower than subsequent runs.
+For training the models, run:
+
+```bash
+pip install scikit-learn joblib
+python train.py
+```
 
 ## Acknowledgments
 
