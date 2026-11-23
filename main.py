@@ -1,12 +1,17 @@
 import os
 
 import pandas as pd
+import joblib
 from transformers import pipeline
 
-tweets = pd.read_csv("data/input/tweets.csv",
+tweets = pd.read_csv("data/raw/tweets.csv",
                      dtype={"tweet_id": str}, index_col=False)
-replies = pd.read_csv("data/input/replies.csv",
+replies = pd.read_csv("data/raw/replies.csv",
                       dtype={"tweet_id": str, "original_tweet": str}, index_col=False)
+merged = replies.merge(
+    tweets[["tweet_id", "tweet_text", "claim"]],
+    left_on="original_tweet", right_on="tweet_id", suffixes=("", "_op"),
+)
 
 sentiment_model = pipeline(
     "sentiment-analysis",
@@ -14,10 +19,14 @@ sentiment_model = pipeline(
     top_k=None,
 )
 nli = pipeline("text-classification",
-               model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli", top_k=None)
-
+               model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli",
+               top_k=None
+               )
 irony_model = pipeline("text-classification",
-                       model="cardiffnlp/twitter-roberta-base-irony", top_k=None)
+                       model="cardiffnlp/twitter-roberta-base-irony",
+                       top_k=None
+                       )
+
 
 def nli_scores(premise: str, hypothesis: str) -> dict:
     scores = nli({"text": premise, "text_pair": hypothesis}, truncation=True)
@@ -46,12 +55,7 @@ def irony_score(text: str) -> float:
     return next(s["score"] for s in scores if s["label"] == "irony")
 
 
-if __name__ == "__main__":
-    merged = replies.merge(
-        tweets[["tweet_id", "tweet_text", "claim"]],
-        left_on="original_tweet", right_on="tweet_id", suffixes=("", "_op"),
-    )
-
+def generate_features():
     output = []
 
     for _, r in merged.iterrows():
@@ -75,6 +79,19 @@ if __name__ == "__main__":
             "irony": irony,
         })
 
-    os.makedirs("data/output", exist_ok=True)
-    pd.DataFrame(output).to_csv("data/output/features.csv", index=False)
-    print(f"Saved {len(output)} rows to data/output/features.csv")
+    os.makedirs("data/interim", exist_ok=True)
+    pd.DataFrame(output).to_csv("data/interim/features.csv", index=False)
+    print(f"Saved {len(output)} rows to data/interim/features.csv")
+
+    return output
+
+
+if __name__ == "__main__":
+    df = pd.DataFrame(generate_features())
+
+    clf = joblib.load("models/stance_classifier.joblib")
+    df["predicted_stance"] = clf.predict(df[RAW])
+
+    os.makedirs("data/interim", exist_ok=True)
+    df.to_csv("data/interim/features.csv", index=False)
+    print(f"Saved {len(df)} rows to data/interim/features.csv")
