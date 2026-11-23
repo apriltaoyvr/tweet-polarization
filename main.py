@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import joblib
 from transformers import pipeline
+from features import RAW
 
 tweets = pd.read_csv("data/raw/tweets.csv",
                      dtype={"tweet_id": str}, index_col=False)
@@ -63,25 +64,20 @@ def generate_features():
 
         sent = sentiment_scores(text)
         irony = round(irony_score(text), 3)
-        label, agree, disagree = stance(text, claim)
+        _, agree, disagree = stance(text, claim)
 
         output.append({
             "reply_id": r["tweet_id"],
             "response_to": r["original_tweet"],
             "reply_text": text,
-            "personal_label": r.get("personal_label", "") if not pd.isna(r.get("personal_label")) else "",
-            "prediction": label,
             "nli_agrees": round(agree, 3),
             "nli_disagrees": round(disagree, 3),
             "sent_negative": round(sent["negative"], 3),
             "sent_neutral": round(sent["neutral"], 3),
             "sent_positive": round(sent["positive"], 3),
             "irony": irony,
+            "personal_label": r.get("personal_label", "") if not pd.isna(r.get("personal_label")) else "",
         })
-
-    os.makedirs("data/interim", exist_ok=True)
-    pd.DataFrame(output).to_csv("data/interim/features.csv", index=False)
-    print(f"Saved {len(output)} rows to data/interim/features.csv")
 
     return output
 
@@ -90,7 +86,7 @@ if __name__ == "__main__":
     df = pd.DataFrame(generate_features())
 
     clf = joblib.load("models/stance_classifier.joblib")
-    df["stance"] = clf.predict("data/raw")
+    df["stance"] = clf.predict(df[RAW])
 
     os.makedirs("data/interim", exist_ok=True)
     df.to_csv("data/interim/features.csv", index=False)
