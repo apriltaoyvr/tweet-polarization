@@ -1,11 +1,12 @@
 import os
 
 import pandas as pd
+import joblib
 from transformers import pipeline
 
-tweets = pd.read_csv("data/input/tweets.csv",
+tweets = pd.read_csv("data/raw/tweets.csv",
                      dtype={"tweet_id": str}, index_col=False)
-replies = pd.read_csv("data/input/replies.csv",
+replies = pd.read_csv("data/raw/replies.csv",
                       dtype={"tweet_id": str, "original_tweet": str}, index_col=False)
 merged = replies.merge(
     tweets[["tweet_id", "tweet_text", "claim"]],
@@ -18,13 +19,13 @@ sentiment_model = pipeline(
     top_k=None,
 )
 nli = pipeline("text-classification",
-               model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli", 
+               model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli",
                top_k=None
-)
+               )
 irony_model = pipeline("text-classification",
-                       model="cardiffnlp/twitter-roberta-base-irony", 
+                       model="cardiffnlp/twitter-roberta-base-irony",
                        top_k=None
-)
+                       )
 
 
 def nli_scores(premise: str, hypothesis: str) -> dict:
@@ -78,36 +79,19 @@ def generate_features():
             "irony": irony,
         })
 
-    os.makedirs("data/output", exist_ok=True)
+    os.makedirs("data/interim", exist_ok=True)
     pd.DataFrame(output).to_csv("data/interim/features.csv", index=False)
-    print(f"Saved {len(output)} rows to data/output/features.csv")
+    print(f"Saved {len(output)} rows to data/interim/features.csv")
+
+    return output
 
 
 if __name__ == "__main__":
+    df = pd.DataFrame(generate_features())
 
-    output = []
+    clf = joblib.load("models/stance_classifier.joblib")
+    df["stance"] = clf.predict("data/raw")
 
-    for _, r in merged.iterrows():
-        text, claim = r["reply_text"], r["claim"]
-
-        sent = sentiment_scores(text)
-        irony = round(irony_score(text), 3)
-        label, agree, disagree = stance(text, claim)
-
-        output.append({
-            "reply_id": r["tweet_id"],
-            "response_to": r["original_tweet"],
-            "reply_text": text,
-            "personal_label": r.get("personal_label", "") if not pd.isna(r.get("personal_label")) else "",
-            "prediction": label,
-            "nli_agrees": round(agree, 3),
-            "nli_disagrees": round(disagree, 3),
-            "sent_negative": round(sent["negative"], 3),
-            "sent_neutral": round(sent["neutral"], 3),
-            "sent_positive": round(sent["positive"], 3),
-            "irony": irony,
-        })
-
-    os.makedirs("data/output", exist_ok=True)
-    pd.DataFrame(output).to_csv("data/interim/features.csv", index=False)
-    print(f"Saved {len(output)} rows to data/output/features.csv")
+    os.makedirs("data/interim", exist_ok=True)
+    df.to_csv("data/interim/features.csv", index=False)
+    print(f"Saved {len(df)} rows to data/interim/features.csv")
