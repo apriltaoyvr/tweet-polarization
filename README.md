@@ -1,11 +1,23 @@
 # Political Leaning Classification
 
-A mini-experiment for COMP 301. This code uses Hugging Face transformers ([facebook/bart-large-mnli](https://huggingface.co/facebook/bart-large-mnli), [cardiffnlp/twitter-roberta-base-sentiment-latest](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest)) to classify the political leanings of replies and authors to selected tweets. The goal is to check if the majority of replies to a tweet are aligned with the political leanings of the tweet's author.
+Determine if the most popular replies to tweets are in agreement with the author. Part of a small experiment for COMP 301 to discuss social media bubbles and echo chambers. 
+
+## Description
+
+The code uses three Hugging Face transformers to classify the political leaning of tweets and their replies. 
+
+The models used are:
+
+- [MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli](https://huggingface.co/MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli) for NLI entailment
+- [cardiffnlp/twitter-roberta-base-sentiment-latest](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest) for sentiment analysis
+- [cardiffnlp/twitter-roberta-base-irony](https://huggingface.co/cardiffnlp/twitter-roberta-base-irony) for irony detection
+
+`data/input` contains the input tweets, which were hand selected and labeled for classification. `data/output/features.csv` is a CSV file with predicted entailment, sentiment, and irony for each reply to a tweet.
 
 ## Getting Started
 
 ```bash
-pip install transformers torch
+pip install transformers torch pandas
 python main.py
 ```
 
