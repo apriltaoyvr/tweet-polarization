@@ -6,7 +6,7 @@ Determine if the most popular replies to tweets are in agreement with the author
 
 ### Data
 
-`data/data/raw` contains the input tweets, which were hand selected and labeled for classification. `tweets.csv` are the tweets being replied to, and `replies.csv` are the replies to those tweets.
+`data/raw` contains the input tweets, which were hand selected and labeled for classification. `tweets.csv` are the tweets being replied to, and `replies.csv` are the replies to those tweets.
 
 `data/interim/features.csv` is a CSV file with predicted entailment, sentiment, and irony for each reply to a tweet. 
 
@@ -41,3 +41,5 @@ python train.py
 ## Acknowledgments
 
 Inspired by [Nasuto A, Rowe F (2024), Understanding anti-immigration sentiment spreading on Twitter](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0307917), PLOS ONE.
+
+Code relating to the logistic regression model (`features.py`, `models/train.py`) was created with Claude.
