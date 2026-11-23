@@ -1,6 +1,6 @@
 # Political Leaning Classification
 
-Determine if the most popular replies to tweets are in agreement with the author. Part of a small experiment for COMP 301 to discuss social media bubbles and echo chambers. 
+Determine if the most popular replies to tweets are in agreement with the author. A small experiment for COMP 301 on social media polarization and echo chambers. 
 
 ## Description
 
@@ -14,12 +14,13 @@ Determine if the most popular replies to tweets are in agreement with the author
 
 ### Models
 
-The code uses three Hugging Face transformers to classify the political leaning of tweets and their replies. 
+The code uses the following Hugging Face transformers to classify features of the replies to tweets:
 
 - [MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli](https://huggingface.co/MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli) for NLI entailment
 - [cardiffnlp/twitter-roberta-base-sentiment-latest](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest) for sentiment analysis
 - [cardiffnlp/twitter-roberta-base-irony](https://huggingface.co/cardiffnlp/twitter-roberta-base-irony) for irony detection
-- `stance_classifier.joblib` is a logistic regression model trained on `features.csv` above to classify the stance of the replies to the tweets
+
+`stance_classifier.joblib` is a logistic regression model trained on the generated `features.csv` to predict the stance of the replies to the tweets. The model is trained on a small dataset and may not generalize well to other datasets.
 
 
 ## Getting Started
