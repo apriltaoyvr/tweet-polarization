@@ -1,4 +1,4 @@
-reply_id,response_to,reply_text,nli_agrees,nli_disagrees,sent_negative,sent_neutral,sent_positive,irony,personal_label,stance
+reply_id,response_to,reply_text,nli_agrees,nli_disagrees,sent_negative,sent_neutral,sent_positive,irony,personal_label,predicted_stance
 892120092603027461,892119586287493120,Did @CNN just assume that baby's gender??? ,0.008,0.007,0.721,0.269,0.01,0.935,agreement,agreement
 892156707937415173,892119586287493120,"That's a gay man too.
 So basically liberals have gotten gay men to marry women and have kids.",0.015,0.019,0.568,0.411,0.021,0.944,agreement,disagreement

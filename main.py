@@ -86,7 +86,7 @@ if __name__ == "__main__":
     df = pd.DataFrame(generate_features())
 
     clf = joblib.load("models/stance_classifier.joblib")
-    df["stance"] = clf.predict(df[RAW])
+    df["predicted_stance"] = clf.predict(df[RAW])
 
     os.makedirs("data/interim", exist_ok=True)
     df.to_csv("data/interim/features.csv", index=False)
