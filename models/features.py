@@ -2,14 +2,26 @@ import numpy as np
 import pandas as pd
 
 RAW = ["nli_agrees", "nli_disagrees", "sent_negative", "sent_positive", "irony"]
-NUMERIC = ["nli_agrees_logit", "nli_disagrees_logit", "sent_negative",
-           "sent_positive", "irony", "neg_x_irony"]
+NUMERIC = [
+    "nli_agrees_logit",
+    "nli_disagrees_logit",
+    "sent_negative",
+    "sent_positive",
+    "irony",
+    "neg_x_irony",
+]
 
+def clean_text(value) -> str:
+    if pd.isna(value):
+        return ""
+    return " ".join(str(value).split())
+
+def format_claim_reply(claim, reply_text) -> str:
+    return f"Claim: {clean_text(claim)} | Reply: {clean_text(reply_text)}"
 
 def _logit(p):
     p = np.clip(p, 1e-4, 1 - 1e-4)
     return np.log(p / (1 - p))
-
 
 def add_engineered(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()

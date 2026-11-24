@@ -2,26 +2,73 @@ import sys
 from pathlib import Path
 
 import joblib
+import numpy as np
+import numpy as np
 import pandas as pd
+from sentence_transformers import SentenceTransformer
+from sklearn.compose import ColumnTransformer
+from sentence_transformers import SentenceTransformer
+from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, f1_score
+from sklearn.metrics import (
+    balanced_accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    roc_auc_score,
+)
+from sklearn.metrics import (
+    balanced_accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    roc_auc_score,
+)
 from sklearn.model_selection import LeaveOneGroupOut, cross_val_predict
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer, StandardScaler
+from sklearn.preprocessing import StandardScaler
 
-ROOT = Path(__file__).resolve().parent
-if not (ROOT / "features.py").exists():
-    ROOT = ROOT.parent
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-from features import RAW, NUMERIC, add_engineered   # noqa: E402
+from models.features import RAW, clean_text, format_claim_reply  # noqa: E402
+from models.features import RAW, clean_text, format_claim_reply  # noqa: E402
 
-LABELS = ["agreement", "disagreement", "neutral"]
+LABELS = ["agreement", "disagreement"]
+MODEL_NAME = "all-MiniLM-L6-v2"
+LABELS = ["agreement", "disagreement"]
+MODEL_NAME = "all-MiniLM-L6-v2"
 
-df = pd.read_csv(ROOT / "data/interim/features.csv",
-                 dtype={"reply_id": str, "response_to": str})
+df = pd.read_csv(
+    ROOT / "data/interim/features.csv",
+    dtype={"reply_id": str, "response_to": str},
+)
+
+if "op_claim" not in df.columns:
+    tweets = pd.read_csv(ROOT / "data/raw/tweets.csv",
+                         dtype={"tweet_id": str})
+    claim_map = dict(zip(tweets["tweet_id"], tweets["claim"]))
+    df["op_claim"] = df["response_to"].map(claim_map)
+
+df = pd.read_csv(
+    ROOT / "data/interim/features.csv",
+    dtype={"reply_id": str, "response_to": str},
+)
+
+if "op_claim" not in df.columns:
+    tweets = pd.read_csv(ROOT / "data/raw/tweets.csv",
+                         dtype={"tweet_id": str})
+    claim_map = dict(zip(tweets["tweet_id"], tweets["claim"]))
+    df["op_claim"] = df["response_to"].map(claim_map)
+
 df = df[df["personal_label"].isin(LABELS)].copy()
+df[RAW] = df[RAW].replace([np.inf, -np.inf], np.nan)
+df = df.dropna(subset=RAW + ["reply_text", "response_to", "op_claim"]).copy()
 
 counts = df["personal_label"].value_counts()
 print(counts, "\n")
@@ -29,31 +76,137 @@ if len(counts) < 2 or counts.min() < 3:
     raise SystemExit("Need at least 2 classes with 3+ examples each.")
 print(pd.crosstab(df["response_to"], df["personal_label"]), "\n")
 
-X = df[RAW]                     # raw columns only; engineering happens inside the model
+df["paired_text"] = [
+    format_claim_reply(c, r) for c, r in zip(df["op_claim"], df["reply_text"])
+]
+df["reply_text"] = df["reply_text"].map(clean_text)
+
+encoder = SentenceTransformer(MODEL_NAME)
+paired_emb = encoder.encode(
+    df["reply_text"].tolist(), normalize_embeddings=True)
+
+emb_cols = [f"emb_{i}" for i in range(paired_emb.shape[1])]
+X = pd.concat(
+    [
+        pd.DataFrame(paired_emb, columns=emb_cols, index=df.index),
+        df[RAW].astype(float),
+    ],
+    axis=1,
+)
+df["paired_text"] = [
+    format_claim_reply(c, r) for c, r in zip(df["op_claim"], df["reply_text"])
+]
+df["reply_text"] = df["reply_text"].map(clean_text)
+
+encoder = SentenceTransformer(MODEL_NAME)
+paired_emb = encoder.encode(
+    df["reply_text"].tolist(), normalize_embeddings=True)
+
+emb_cols = [f"emb_{i}" for i in range(paired_emb.shape[1])]
+X = pd.concat(
+    [
+        pd.DataFrame(paired_emb, columns=emb_cols, index=df.index),
+        df[RAW].astype(float),
+    ],
+    axis=1,
+)
 y = df["personal_label"]
+y_bin = (y == "disagreement").astype(int)
+y_bin = (y == "disagreement").astype(int)
 groups = df["response_to"]
 
-model = Pipeline([
-    ("fe", FunctionTransformer(add_engineered)),
-    ("scale", StandardScaler()),
-    ("clf", LogisticRegression(C=0.5, max_iter=1000, class_weight="balanced")),
+
+preprocess = ColumnTransformer([
+    ("emb", StandardScaler(), emb_cols),
+    ("scores", StandardScaler(), RAW),
 ])
 
+model = Pipeline(
+    [
+        ("prep", preprocess),
+        (
+            "clf",
+            LogisticRegression(
+                C=0.01,
+                solver="liblinear",
+                max_iter=2000,
+                class_weight="balanced",
+            ),
+        ),
+    ]
+)
+
 cv = LeaveOneGroupOut()
-for name, est in [("majority baseline", DummyClassifier(strategy="most_frequent")),
-                  ("logistic regression", model)]:
+
+
+def within_tweet_auc(y_bin, p, groups):
+    y_bin, p, groups = map(np.asarray, (y_bin, p, groups))
+    num = den = 0.0
+    for t in np.unique(groups):
+        m = groups == t
+        pos = y_bin[m].sum()
+        neg = m.sum() - pos
+        if pos and neg:
+            num += roc_auc_score(y_bin[m], p[m]) * pos * neg
+            den += pos * neg
+    return num / den
+
+
+for name, est in [
+    ("majority baseline", DummyClassifier(strategy="most_frequent")),
+    ("joint emb + raw scores (C=0.01)", model),
+]:
     pred = cross_val_predict(est, X, y, groups=groups, cv=cv)
-    print(f"== {name} ==  macro-F1 = {f1_score(y, pred, average='macro'):.3f}")
+    pred_bin = (pred == "disagreement").astype(int)
+    print(
+        f"== {name} ==  macro-F1 = {f1_score(y, pred, average='macro', zero_division=0):.3f}"
+    )
+    print(
+        f"balanced accuracy = {balanced_accuracy_score(y_bin, pred_bin):.3f}")
+    if hasattr(est, "predict_proba") and name != "majority baseline":
+        proba = cross_val_predict(
+            est, X, y, groups=groups, cv=cv, method="predict_proba"
+        )
+        print(f"ROC AUC           = {roc_auc_score(y_bin, proba[:, 1]):.3f}")
+        print(
+            f"within-tweet AUC  = {within_tweet_auc(y_bin, proba[:, 1], groups):.3f}")
+    pred_bin = (pred == "disagreement").astype(int)
+    print(
+        f"== {name} ==  macro-F1 = {f1_score(y, pred, average='macro', zero_division=0):.3f}"
+    )
+    print(
+        f"balanced accuracy = {balanced_accuracy_score(y_bin, pred_bin):.3f}")
+    if hasattr(est, "predict_proba") and name != "majority baseline":
+        proba = cross_val_predict(
+            est, X, y, groups=groups, cv=cv, method="predict_proba"
+        )
+        print(f"ROC AUC           = {roc_auc_score(y_bin, proba[:, 1]):.3f}")
+        print(
+            f"within-tweet AUC  = {within_tweet_auc(y_bin, proba[:, 1], groups):.3f}")
     print(classification_report(y, pred, zero_division=0))
     print(confusion_matrix(y, pred, labels=LABELS), "\n")
 
 model.fit(X, y)
 
-clf = model.named_steps["clf"]
-rows = (list(clf.classes_) if len(clf.classes_) > 2
-        else [f"{clf.classes_[1]} (vs {clf.classes_[0]})"])
-print(pd.DataFrame(clf.coef_, index=rows, columns=NUMERIC).round(2).T)
-
 (ROOT / "models").mkdir(exist_ok=True)
-joblib.dump(model, ROOT / "models/stance_classifier.joblib")
-print(model)
+joblib.dump(
+    {
+        "pipeline": model,
+        "embedding_model": MODEL_NAME,
+        "emb_cols": emb_cols,
+        "raw_cols": RAW,
+    },
+    ROOT / "models/stance_classifier.joblib",
+)
+print("Saved models/stance_classifier.joblib")
+
+joblib.dump(
+    {
+        "pipeline": model,
+        "embedding_model": MODEL_NAME,
+        "emb_cols": emb_cols,
+        "raw_cols": RAW,
+    },
+    ROOT / "models/stance_classifier.joblib",
+)
+print("Saved models/stance_classifier.joblib")

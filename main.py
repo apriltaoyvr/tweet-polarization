@@ -3,7 +3,10 @@ import os
 import pandas as pd
 import joblib
 from transformers import pipeline
-from features import RAW
+from sentence_transformers import SentenceTransformer
+
+from models.features import RAW, clean_text, format_claim_reply
+from data.clean import process_results, stance_breakdown
 
 tweets = pd.read_csv("data/raw/tweets.csv",
                      dtype={"tweet_id": str}, index_col=False)
@@ -55,12 +58,12 @@ def irony_score(text: str) -> float:
     scores = irony_model(text)[0]
     return next(s["score"] for s in scores if s["label"] == "irony")
 
-
-def generate_features():
+def quantify_features():
     output = []
 
     for _, r in merged.iterrows():
-        text, claim = r["reply_text"], r["claim"]
+        text = clean_text(r["reply_text"])
+        claim = clean_text(r["claim"])
 
         sent = sentiment_scores(text)
         irony = round(irony_score(text), 3)
@@ -81,13 +84,30 @@ def generate_features():
 
     return output
 
+def create_features(df: pd.DataFrame):
+    bundle = joblib.load("models/stance_classifier.joblib")
+    encoder = SentenceTransformer(bundle["embedding_model"])
+    paired_texts = [
+        format_claim_reply(c, r) for c, r in zip(df["op_claim"], df["reply_text"])
+    ]
+    paired_emb = encoder.encode(paired_texts, normalize_embeddings=True)
 
-if __name__ == "__main__":
-    df = pd.DataFrame(generate_features())
-
-    clf = joblib.load("models/stance_classifier.joblib")
-    df["predicted_stance"] = clf.predict(df[RAW])
+    X_infer = pd.concat(
+        [
+            pd.DataFrame(
+                paired_emb, columns=bundle["emb_cols"], index=df.index),
+            df[bundle["raw_cols"]].astype(float),
+        ],
+        axis=1,
+    )
+    df["predicted_stance"] = bundle["pipeline"].predict(X_infer)
 
     os.makedirs("data/interim", exist_ok=True)
     df.to_csv("data/interim/features.csv", index=False)
     print(f"Saved {len(df)} rows to data/interim/features.csv")
+
+if __name__ == "__main__":
+    df = pd.DataFrame(quantify_features())
+    create_features(df)
+    process_results(df)
+    stance_breakdown(df)
