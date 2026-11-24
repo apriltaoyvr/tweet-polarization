@@ -3,6 +3,11 @@ import pandas as pd
 
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score
 
+def clean_text(value) -> str:
+    if pd.isna(value):
+        return ""
+    return " ".join(str(value).split())
+
 def stance_breakdown(df, out_dir="data/processed"):
     os.makedirs(out_dir, exist_ok=True)
 

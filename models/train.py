@@ -1,10 +1,12 @@
 import sys
 from pathlib import Path
 
-import joblib
 import numpy as np
 import pandas as pd
+import joblib
+
 from sentence_transformers import SentenceTransformer
+
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyClassifier
 from sklearn.linear_model import LogisticRegression
@@ -23,9 +25,12 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from models.features import RAW, clean_text, format_claim_reply  # noqa: E402
+from data.clean import clean_text # noqa: E402
 
 LABELS = ["agreement", "disagreement"]
+RAW = ["nli_agrees", "nli_disagrees",
+       "sent_negative", "sent_positive", "irony"]
+
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 df = pd.read_csv(
@@ -52,13 +57,13 @@ print(pd.crosstab(df["response_to"], df["personal_label"]), "\n")
 df["reply_text"] = df["reply_text"].map(clean_text)
 
 encoder = SentenceTransformer(MODEL_NAME)
-paired_emb = encoder.encode(
+text_emb = encoder.encode(
     df["reply_text"].tolist(), normalize_embeddings=True)
 
-emb_cols = [f"emb_{i}" for i in range(paired_emb.shape[1])]
+emb_cols = [f"emb_{i}" for i in range(text_emb.shape[1])]
 X = pd.concat(
     [
-        pd.DataFrame(paired_emb, columns=emb_cols, index=df.index),
+        pd.DataFrame(text_emb, columns=emb_cols, index=df.index),
         df[RAW].astype(float),
     ],
     axis=1,
@@ -90,6 +95,7 @@ model = Pipeline(
 cv = LeaveOneGroupOut()
 
 
+# distinguish agreement vs. disagreement within the same thread
 def within_tweet_auc(y_bin, p, groups):
     y_bin, p, groups = map(np.asarray, (y_bin, p, groups))
     num = den = 0.0

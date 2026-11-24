@@ -5,8 +5,7 @@ import joblib
 from transformers import pipeline
 from sentence_transformers import SentenceTransformer
 
-from models.features import RAW, clean_text, format_claim_reply
-from data.clean import process_results, stance_breakdown
+from data.clean import process_results, stance_breakdown, clean_text
 
 tweets = pd.read_csv("data/raw/tweets.csv",
                      dtype={"tweet_id": str}, index_col=False)
@@ -22,37 +21,33 @@ sentiment_model = pipeline(
     model="cardiffnlp/twitter-roberta-base-sentiment-latest",
     top_k=None,
 )
-nli = pipeline("text-classification",
-               model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli",
-               top_k=None
-               )
-irony_model = pipeline("text-classification",
-                       model="cardiffnlp/twitter-roberta-base-irony",
-                       top_k=None
-                       )
 
+nli = pipeline(
+    "text-classification",
+    model="MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli",
+    top_k=None
+)
+
+irony_model = pipeline(
+    "text-classification",
+    model="cardiffnlp/twitter-roberta-base-irony",
+    top_k=None
+)
 
 def nli_scores(premise: str, hypothesis: str) -> dict:
     scores = nli({"text": premise, "text_pair": hypothesis}, truncation=True)
     return {s["label"].lower(): s["score"] for s in scores}
 
-
-def stance(reply_text, claim, margin=0.1):
+def stance(reply_text, claim):
     scores = nli_scores(reply_text, claim)
     agree = scores["entailment"]
     disagree = scores["contradiction"]
 
-    if abs(agree - disagree) < margin:
-        label = "neutral"
-    else:
-        label = "agreement" if agree > disagree else "disagreement"
-    return label, agree, disagree
-
+    return agree, disagree
 
 def sentiment_scores(text: str) -> dict:
     scores = sentiment_model(text)[0]
     return {s["label"].lower(): s["score"] for s in scores}
-
 
 def irony_score(text: str) -> float:
     scores = irony_model(text)[0]
@@ -67,7 +62,7 @@ def quantify_features():
 
         sent = sentiment_scores(text)
         irony = round(irony_score(text), 3)
-        _, agree, disagree = stance(text, claim)
+        agree, disagree = stance(text, claim)
 
         output.append({
             "reply_id": r["tweet_id"],
@@ -84,13 +79,12 @@ def quantify_features():
 
     return output
 
+
 def create_features(df: pd.DataFrame):
     bundle = joblib.load("models/stance_classifier.joblib")
     encoder = SentenceTransformer(bundle["embedding_model"])
-    paired_texts = [
-        format_claim_reply(c, r) for c, r in zip(df["op_claim"], df["reply_text"])
-    ]
-    paired_emb = encoder.encode(paired_texts, normalize_embeddings=True)
+    paired_emb = encoder.encode(
+        df["reply_text"].tolist(), normalize_embeddings=True)
 
     X_infer = pd.concat(
         [
@@ -105,6 +99,7 @@ def create_features(df: pd.DataFrame):
     os.makedirs("data/interim", exist_ok=True)
     df.to_csv("data/interim/features.csv", index=False)
     print(f"Saved {len(df)} rows to data/interim/features.csv")
+
 
 if __name__ == "__main__":
     df = pd.DataFrame(quantify_features())
