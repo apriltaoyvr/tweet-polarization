@@ -35,7 +35,7 @@ python main.py
 For training the models, run:
 
 ```bash
-pip install scikit-learn joblib
+pip install scikit-learn joblib sentence-transformers
 python train.py
 ```
 
