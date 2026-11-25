@@ -1,4 +1,4 @@
-# Political Leaning Classification
+# Tweet Polarization
 
 Determine if the most popular replies to tweets are in agreement with the author. A small experiment for COMP 301 on social media polarization and echo chambers. 
 
