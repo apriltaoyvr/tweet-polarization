@@ -14,19 +14,19 @@ def stance_breakdown(df, out_dir="data/processed"):
     lab = df[df["personal_label"].isin(["agreement", "disagreement"])]
 
     def summarize(g):
-        labeled_pct_agree = (g["personal_label"] == "agreement").mean() * 100
-        labeled_pct_disagree = (g["personal_label"] == "disagreement").mean() * 100
-        predicted_pct_agree = (g["predicted_stance"] == "agreement").mean() * 100
-        predicted_pct_disagree = (g["predicted_stance"] == "disagreement").mean() * 100
+        labeled_agree = (g["personal_label"] == "agreement").mean()
+        labeled_disagree = (g["personal_label"] == "disagreement").mean()
+        predicted_agree = (g["predicted_stance"] == "agreement").mean()
+        predicted_disagree = (g["predicted_stance"] == "disagreement").mean()
 
         return pd.Series({
             "n_replies": len(g),
-            "labeled_pct_agree": labeled_pct_agree,
-            "labeled_pct_disagree": labeled_pct_disagree,
-            "predicted_pct_agree": predicted_pct_agree,
-            "predicted_pct_disagree": predicted_pct_disagree,
-            "labeled_difference": labeled_pct_agree - labeled_pct_disagree,
-            "predicted_difference": predicted_pct_agree - predicted_pct_disagree,
+            "labeled_agree": labeled_agree,
+            "labeled_disagree": labeled_disagree,
+            "predicted_agree": predicted_agree,
+            "predicted_disagree": predicted_disagree,
+            "labeled_difference": labeled_agree - labeled_disagree,
+            "predicted_difference": predicted_agree - predicted_disagree,
         })
 
     by_thread = lab.groupby("response_to")[["personal_label", "predicted_stance"]].apply(summarize)
